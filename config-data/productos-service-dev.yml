@@ -1,0 +1,5 @@
+productos:
+  property: Productos Profile Dev
+
+server:
+  port: 8002
