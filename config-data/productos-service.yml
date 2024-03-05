@@ -1,5 +1,3 @@
-productos:
-  property: Productos Profile Default
 server:
   port: 8002
 spring:
