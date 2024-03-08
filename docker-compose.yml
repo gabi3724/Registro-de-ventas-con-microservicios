@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build: eureka-server
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+    networks:
+      - 'ventas-network'
+  config-server:
+    build: config-server
+    mem_limit: 521m
+    ports:
+      - "8081:8081"
+    networks:
+      - "ventas-network"
+  api-gateway:
+    build: api-gateway
+    mem_limit: 512m
+    ports:
+      - "443:443"
+    networks:
+      - 'ventas-network'
+  #productos-service:
+  #  build: productos-service
+  #  mem_limit: 512m
+  #  ports:
+  #    - "8000:8000"
+  #  networks:
+  #    - 'ventas-network'
+
+networks:
+  ventas-network:
