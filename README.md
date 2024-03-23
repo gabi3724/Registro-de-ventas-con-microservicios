@@ -5,6 +5,7 @@
 
 # Registro de ventas con micorservicios
 El proyecto se centra en el desarrollo de un backend donde se puedan registrar las ventas de un comercio utilizando una arquitectura de microservicios. En el siguiente diagrama se muestra la estructura del sistema.
+
 ![Diagrama de la arquitectura](grafico.png) 
 
 # Surgimiento
