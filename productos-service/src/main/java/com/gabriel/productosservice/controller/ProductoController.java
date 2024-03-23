@@ -18,9 +18,13 @@ public class ProductoController {
     @Value("${server.port}")
     private int serverPort;
 
+    @GetMapping("/port")
+    public String getPort(){
+        return "Atendiendo peticion desde el puerto: " + serverPort;
+    }
+
     @GetMapping("/{id}")
     public Producto getProducto(@PathVariable Long id){
-        System.out.println("Atendiendo peticion desde el puerto: " + serverPort);
         return productoService.getProducto(id);
     }
 

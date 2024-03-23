@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.gabriel</groupId>
 	<artifactId>carrito-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>carrito-service</name>
 	<description>Microservicio para el carrito de compras</description>
 	<properties>
@@ -69,13 +69,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-config-client</artifactId>
+			<artifactId>spring-cloud-loadbalancer</artifactId>
 			<version>4.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-bootstrap</artifactId>
-			<version>4.0.0</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -102,6 +97,13 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>

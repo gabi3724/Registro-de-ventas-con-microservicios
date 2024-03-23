@@ -1,34 +1,95 @@
 version: '3.8'
 
 services:
-  eureka-server:
+  mysqldb:
+    image: mysql:latest
+    restart: always
+    container_name: mysqldb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: productos_service
+    volumes:
+      - ./mysql-scripts:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql   # Se agrega un volumen para persistir los datos
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+     - '8077:80'
+    environment:
+      PMA_HOST: mysqldb
+    depends_on:
+      - mysqldb
+
+  eureka:
     build: eureka-server
-    mem_limit: 512m
+    container_name: eureka
     ports:
-      - "8761:8761"
-    networks:
-      - 'ventas-network'
-  config-server:
-    build: config-server
-    mem_limit: 521m
-    ports:
-      - "8081:8081"
-    networks:
-      - "ventas-network"
+      - '8761:8761'
+    depends_on:
+      - mysqldb
+
   api-gateway:
     build: api-gateway
-    mem_limit: 512m
+    container_name: api-gateway
     ports:
-      - "443:443"
-    networks:
-      - 'ventas-network'
-  #productos-service:
-  #  build: productos-service
-  #  mem_limit: 512m
-  #  ports:
-  #    - "8000:8000"
-  #  networks:
-  #    - 'ventas-network'
+      - '443:443'
+    depends_on:
+      - mysqldb
+      - eureka
+    command: ["sh", "-c", "while ! nc -z eureka 8761; do sleep 1; done && java -jar /api-gateway/target/api-gateway-0.0.1.jar"]  # Espera a que Eureka esté listo antes de iniciar Productos
 
-networks:
-  ventas-network:
+  productos1:
+    build: productos-service
+    container_name: productos1
+    ports:
+      - '8000:8000'
+    environment:
+      PORT: 8000
+    depends_on:
+      - mysqldb
+      - eureka
+      - api-gateway
+    command: ["sh", "-c", "while ! nc -z eureka 8761; do sleep 1; done && java -jar /productos-service/target/productos-service-0.0.1.jar"]  # Espera a que Eureka esté listo antes de iniciar Productos
+
+  productos2:
+    build: productos-service
+    container_name: productos2
+    ports:
+      - '8001:8001'
+    environment:
+      PORT: 8001
+    depends_on:
+      - mysqldb
+      - eureka
+      - api-gateway
+    command: ["sh", "-c", "while ! nc -z eureka 8761; do sleep 1; done && java -jar /productos-service/target/productos-service-0.0.1.jar"]  # Espera a que Eureka esté listo antes de iniciar Productos
+
+  carritos:
+    build: carrito-service
+    container_name: carritos
+    ports:
+      - '8002:8002'
+    depends_on:
+      - mysqldb
+      - eureka
+      - api-gateway
+    command: ["sh", "-c", "while ! nc -z eureka 8761; do sleep 1; done && java -jar /carrito-service/target/carrito-service-0.0.1.jar"]  # Espera a que Eureka esté listo antes de iniciar Productos
+  
+  ventas:
+    build: ventas-service
+    container_name: ventas
+    ports:
+      - '8003:8003'
+    depends_on:
+      - mysqldb
+      - eureka
+      - api-gateway
+    command: ["sh", "-c", "while ! nc -z eureka 8761; do sleep 1; done && java -jar /ventas-service/target/ventas-service-0.0.1.jar"]  # Espera a que Eureka esté listo antes de iniciar Productos
+
+volumes:
+  mysql-data:   # Define el volumen 'mysql-data' para persistir los datos de MySQL 
